@@ -6,6 +6,9 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html { -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; } /* anchor jumps glide; sections carry scroll-margin-top for the fixed header */
+}
 
 body {
   margin: 0;
@@ -70,6 +73,9 @@ small { font-size: var(--fs-xs); }
   transition: top var(--dur-base) var(--ease-out);
 }
 .skip-link:focus { top: 12px; color: #fff; }
+
+/* Depth-rail dots: visible hover state */
+[data-raildot]:hover { background: var(--aqua-500) !important; box-shadow: 0 0 0 3px rgba(0,194,209,0.15); }
 
 /* ============================================================
    KEYFRAMES
@@ -174,7 +180,7 @@ small { font-size: var(--fs-xs); }
 }
 .card--inverse {
   background: var(--navy-700);
-  border: 1px solid rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.12);
   box-shadow: none;
 }
 .card--gold-top { border-top: 3px solid var(--gold-500); }

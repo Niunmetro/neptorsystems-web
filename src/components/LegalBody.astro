@@ -42,7 +42,7 @@ function parts(text: string) {
 <main id="main" style="min-height:60vh;">
   <div style="max-width:760px;margin:0 auto;padding:clamp(56px,9vw,96px) clamp(20px,5vw,40px);">
     <div style="font-family:var(--font-ui);font-size:12px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--aqua-700);">{ORG.name}</div>
-    <h1 style="font-family:var(--font-heading);font-weight:700;font-size:clamp(2rem,4vw,2.75rem);line-height:1.1;letter-spacing:-0.02em;color:var(--navy-800);margin:14px 0 clamp(28px,4vw,40px);">{title}</h1>
+    <h1 style="font-family:var(--font-heading);font-weight:700;font-size:clamp(2rem,4vw,2.75rem);line-height:1.12;letter-spacing:-0.015em;color:var(--navy-800);margin:14px 0 clamp(28px,4vw,40px);">{title}</h1>
 
     {doc.sections.map((sec) => (
       <section style="margin-top:clamp(28px,3.5vw,40px);">
@@ -50,7 +50,7 @@ function parts(text: string) {
         {sec.blocks.map((b) => (
           <>
             {'p' in b && (
-              <p style="font-family:var(--font-body);font-size:16px;line-height:1.7;color:var(--ink-700);margin:0 0 12px;">
+              <p style="font-family:var(--font-body);font-size:16px;line-height:1.7;color:var(--ink-700);margin:0 0 12px;max-width:70ch;">
                 {parts(b.p).map((seg) => (seg.tok
                   ? <a href={seg.tok.href} style="color:var(--aqua-700);" {...(seg.tok.external ? { target: '_blank', rel: 'noopener' } : {})}>{seg.tok.label}</a>
                   : <>{seg.text}</>))}
@@ -59,7 +59,7 @@ function parts(text: string) {
             {'ul' in b && (
               <ul style="margin:0 0 12px;padding-left:22px;display:flex;flex-direction:column;gap:8px;">
                 {b.ul.map((li) => (
-                  <li style="font-family:var(--font-body);font-size:16px;line-height:1.6;color:var(--ink-700);">
+                  <li style="font-family:var(--font-body);font-size:16px;line-height:1.6;color:var(--ink-700);max-width:70ch;">
                     {parts(li).map((seg) => (seg.tok
                       ? <a href={seg.tok.href} style="color:var(--aqua-700);" {...(seg.tok.external ? { target: '_blank', rel: 'noopener' } : {})}>{seg.tok.label}</a>
                       : <>{seg.text}</>))}

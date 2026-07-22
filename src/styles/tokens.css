@@ -100,7 +100,7 @@
   --lh-body: 1.65;
 
   /* ---- Letter spacing ---- */
-  --ls-display: -0.02em;
+  --ls-display: -0.015em;
   --ls-heading: -0.01em;
   --ls-body: 0;
   --ls-eyebrow: 0.16em;

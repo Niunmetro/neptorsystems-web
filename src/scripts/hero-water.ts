@@ -1,8 +1,26 @@
-/* Neptor Systems — hero underwater shader (WebGL 1, no libraries).
-   Replaces the two CSS light blobs with real water: caustics + volumetric sun rays.
-   Falls back to the existing CSS ambience ([data-amb] + neptorGlowDrift) when
-   WebGL is unavailable, and renders nothing at all under prefers-reduced-motion.
-   Budgets: 30 FPS cap, DPR<=1.5, internal scale 0.70, paused when hidden/offscreen. */
+/* Neptor Systems — hero underwater ambience (WebGL 1, no libraries).
+   ─────────────────────────────────────────────────────────────────────────────
+   TECHNIQUE (FASE 1 decision):
+   (a) Tileable Voronoi caustic texture + dual min() sampling — the standard
+   game-graphics approach. A seamless caustic tile is generated ONCE on the CPU
+   (toroidal Voronoi: F2−F1 edge distance, inverted and sharpened into thin
+   bright filaments forming organic cells). At runtime the fragment shader
+   samples that tile twice at non-multiple scales / different drift velocities
+   and combines with min(s1, s2): two moving nets intersecting produce the
+   characteristic slow caustic dance. Robust by construction (stable pattern,
+   2 texture reads), hard to "go weird".
+   Studied reference for the quality bar: Evan Wallace, "Rendering Realtime
+   Caustics in WebGL" + github.com/evanw/webgl-water (MIT). His full
+   heightfield + mesh-refraction pipeline is more than a hero background needs;
+   NO third-party code is copied here — everything below is written from
+   scratch for this site. (Shadertoy code is CC BY-NC-SA and was NOT used.)
+   ─────────────────────────────────────────────────────────────────────────────
+   Budgets kept from the previous version: init after first paint
+   (requestIdleCallback), 30 FPS cap, DPR ≤ 1.5, internal scale 0.70, full
+   pause when document.hidden or hero offscreen, ≤ 12 KB gzip, no libraries.
+   Fallbacks: prefers-reduced-motion → no canvas; no WebGL → existing CSS
+   ambience ([data-amb] + neptorGlowDrift, kept in CSS on purpose); shader
+   active → [data-amb] to opacity 0. DOM bubbles float above the canvas. */
 
 type Preset = 'off' | 'suave' | 'alto';
 
@@ -10,6 +28,8 @@ const FPS = 30;
 const FRAME_MS = 1000 / FPS;
 const DPR_CAP = 1.5;
 const RENDER_SCALE = 0.7;
+const TEX = 256;            // caustic tile size (POT → mipmaps)
+const CELLS = 18;           // Voronoi feature points in the tile
 
 let gl: WebGLRenderingContext | null = null;
 let canvas: HTMLCanvasElement | null = null;
@@ -18,6 +38,7 @@ let uTime: WebGLUniformLocation | null = null;
 let uRes: WebGLUniformLocation | null = null;
 let uScrollL: WebGLUniformLocation | null = null;
 let uIntensityL: WebGLUniformLocation | null = null;
+let uSeedL: WebGLUniformLocation | null = null;
 
 let rafId = 0;
 let visible = true;
@@ -27,16 +48,48 @@ let acc = 0;
 let last = 0;
 let scrollP = 0;
 let intensity = 1;
+const seed: [number, number] = [Math.random(), Math.random()]; // random initial offsets
 
 /** Fed by motion.ts's existing rAF-throttled scroll handler (no new listeners). */
 export function setHeroScroll(p: number) {
   scrollP = p;
 }
 
+/* ---- seamless Voronoi caustic tile, generated once on the CPU ----
+   Bright thin filaments where F2−F1 ≈ 0 (cell boundaries), toroidal metric so
+   the texture tiles with no seams. */
+function makeCausticTile(): Uint8Array {
+  const pts: number[][] = [];
+  for (let i = 0; i < CELLS; i++) pts.push([Math.random(), Math.random()]);
+  const data = new Uint8Array(TEX * TEX);
+  for (let j = 0; j < TEX; j++) {
+    const v = j / TEX;
+    for (let i = 0; i < TEX; i++) {
+      const u = i / TEX;
+      let f1 = 9, f2 = 9;
+      for (let k = 0; k < CELLS; k++) {
+        let dx = Math.abs(u - pts[k][0]); if (dx > 0.5) dx = 1 - dx; // wrap
+        let dy = Math.abs(v - pts[k][1]); if (dy > 0.5) dy = 1 - dy;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < f1) { f2 = f1; f1 = d; } else if (d < f2) { f2 = d; }
+      }
+      // edge distance → bright filament, sharpened; faint glow inside cells
+      const e = Math.max(0, 1 - (f2 - f1) / 0.14);
+      let c = Math.pow(e, 3.2) * 0.92 + Math.max(0, 1 - f1 / 0.34) * 0.08;
+      data[j * TEX + i] = Math.max(0, Math.min(255, Math.round(c * 255)));
+    }
+  }
+  return data;
+}
+
 const VERT = `attribute vec2 aPos;void main(){gl_Position=vec4(aPos,0.0,1.0);}`;
 
+/* Runtime shader: depth gradient + dual-sampled caustics + 4 gaussian sun
+   beams (upper right, 8–18°, sway ±2°, breathing ±20%) + left contrast
+   vignette + fine dithering. */
 const FRAG = `precision mediump float;
 uniform float uTime;uniform vec2 uRes;uniform float uScroll;uniform float uIntensity;
+uniform vec2 uSeed;uniform sampler2D uCaustic;
 
 float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
 float vnoise(vec2 p){
@@ -44,53 +97,54 @@ float vnoise(vec2 p){
   float a=hash(i),b=hash(i+vec2(1.0,0.0)),c=hash(i+vec2(0.0,1.0)),d=hash(i+vec2(1.0,1.0));
   return mix(mix(a,b,u.x),mix(c,d,u.x),u.y);
 }
-float fbm(vec2 p){return vnoise(p)*0.65+vnoise(p*2.03+17.3)*0.35;}
 
 void main(){
   vec2 uv=gl_FragCoord.xy/uRes;          // y=0 bottom
   vec2 p=vec2(uv.x,1.0-uv.y);            // p.y: 0 top, 1 bottom
   float aspect=uRes.x/max(uRes.y,1.0);
-  vec2 auv=vec2(uv.x*aspect,uv.y);
+  vec2 q=vec2(uv.x*aspect,uv.y);         // aspect-corrected (no stretching)
+  float t=uTime;
 
-  // (a) depth gradient: lighter near the surface, darker in the deep
-  vec3 top=vec3(0.039,0.122,0.267);      // #0A1F44
-  vec3 deep=vec3(0.024,0.082,0.184);     // #06152F
+  // depth gradient: #0A1F44 near the surface -> #06152F in the deep
+  vec3 top=vec3(0.039,0.122,0.267);
+  vec3 deep=vec3(0.024,0.082,0.184);
   vec3 col=mix(top,deep,smoothstep(0.0,1.0,p.y));
 
-  // (b) caustics: warped value-noise ridges sharpened into thin filaments
-  vec2 q=auv*2.1;
-  q.y+=uTime*0.010;                      // slow upward drift
-  q.y+=uScroll*0.04;                     // 4% parallax with hero scroll
-  vec2 w=vec2(fbm(q+uTime*0.020),fbm(q.yx-uTime*0.017));
-  float n=fbm(q+w*1.35);
-  float ridge=1.0-abs(n*2.0-1.0);
-  float caus=smoothstep(0.70,0.97,ridge);
-  caus*=smoothstep(1.10,0.20,p.y);       // dimmer with depth
-  col+=vec3(0.0,0.761,0.819)*caus*0.17*uIntensity;   // #00C2D1
+  // caustics: two drifting samples of the seamless tile, min() combine.
+  // scales 0.62 / 1.07 are non-multiples; velocities differ; slight upward
+  // drift (sample-space +y = pattern rises); 4% parallax from uScroll.
+  float par=uScroll*0.04;
+  vec2 uv1=q*0.62+uSeed        +vec2( t*0.0052, t*0.0090+par);
+  vec2 uv2=q*1.07+uSeed.yx*7.3 +vec2(-t*0.0071, t*0.0060+par);
+  float caus=min(texture2D(uCaustic,uv1).r,texture2D(uCaustic,uv2).r);
+  caus=smoothstep(0.16,0.86,caus);                 // keep filaments crisp after min
+  caus*=smoothstep(1.05,0.10,p.y);                 // fade with depth
+  col+=vec3(0.0,0.761,0.819)*caus*0.18*uIntensity; // #00C2D1, alpha peak ~0.18
 
-  // (c) sunlight piercing the water from the UPPER RIGHT: radial god-rays
-  //     fanning out from a source just outside the top-right corner.
-  vec2 src=vec2(1.06,-0.12);          // the sun, off-canvas upper right
-  vec2 d=p-src;
-  float r=length(d);                  // distance travelled through the water
-  float a=atan(d.y,d.x);              // angle around the source -> the fan
-  float sway=sin(uTime*0.16)*0.020;   // the whole shaft bundle drifts slowly
-  float s1=vnoise(vec2((a+sway)*9.0,uTime*0.050));
-  float s2=vnoise(vec2((a+sway)*19.0+4.0,uTime*0.033));
-  float shaft=smoothstep(0.50,0.92,s1*0.65+s2*0.35);   // thin angular shafts
-  float atten=exp(-r*1.9);                              // light dies as it sinks
-  float depth=smoothstep(0.74,0.04,p.y);                // never reaches the bottom
-  vec3 sunCol=mix(vec3(1.0,0.965,0.847),vec3(1.0,0.843,0.0),0.35); // #FFF6D8 / #FFD700
-  vec3 rayCol=mix(sunCol,vec3(0.45,0.92,0.95),smoothstep(0.15,0.95,r)); // warm -> aqua with depth
-  col+=rayCol*(shaft*atten*depth)*0.22*uIntensity;
-  // the glare of the sun itself hitting the surface at that corner
-  float glare=exp(-r*r*7.0)*smoothstep(0.95,0.0,p.y);
-  col+=sunCol*glare*0.18*uIntensity;
+  // volumetric sun beams: 4 gaussians from the top edge, right half,
+  // tilted 8-18 deg, sway ±2 deg (14-20 s), breathing ±20% via low-freq noise,
+  // extinguished by ~60% of the hero height. Pure gaussians: no hard edges.
+  vec3 sunCol=mix(vec3(1.0,0.965,0.847),vec3(1.0,0.843,0.0),0.35); // #FFF6D8/#FFD700
+  float beams=0.0;
+  for(int i=0;i<4;i++){
+    float fi=float(i);
+    float cx=0.57+fi*0.115;                                  // top intercepts, right half
+    float ang=radians(8.0+fi*3.3)                            // 8..18 deg
+             +radians(2.0)*sin(t*6.2832/(14.0+fi*2.0)+fi*2.7); // sway ±2 deg
+    float x=p.x-cx+p.y*tan(ang);                             // lean left going down
+    float sig=0.030+fi*0.012;                                // widths ~6-14%
+    float g=exp(-(x*x)/(2.0*sig*sig));
+    float fade=smoothstep(0.60,0.02,p.y);                    // gone by 60% height
+    float breathe=1.0+0.2*(vnoise(vec2(t*0.055+fi*7.0,fi*3.1))*2.0-1.0); // ±20%
+    beams+=g*fade*breathe;
+  }
+  col+=sunCol*beams*0.075*uIntensity;                        // alpha 0.05-0.10
 
-  // (d) left vignette guarantees H1/subtitle contrast, then fine dithering
+  // left vignette keeps H1/subtitle at AA even on the brightest frame
   float vig=smoothstep(0.62,0.0,uv.x)*0.35;
   col=mix(col,deep,vig);
-  col+=(hash(gl_FragCoord.xy)-0.5)*0.0045;
+  // fine dithering against banding
+  col+=(hash(gl_FragCoord.xy+fract(t))-0.5)*0.0045;
 
   gl_FragColor=vec4(col,1.0);
 }`;
@@ -133,7 +187,8 @@ function loop(now: number) {
   if (acc >= FRAME_MS) {
     acc = Math.min(acc % FRAME_MS, FRAME_MS);
     resize();
-    gl.uniform1f(uTime, (now - started) / 1000);
+    // continuous time, wrapped on a long period (never restarted, no jumps)
+    gl.uniform1f(uTime, ((now - started) / 1000) % 3600);
     gl.uniform2f(uRes, canvas!.width, canvas!.height);
     gl.uniform1f(uScrollL, scrollP);
     gl.uniform1f(uIntensityL, intensity);
@@ -158,7 +213,8 @@ function build() {
   canvas = document.createElement('canvas');
   canvas.setAttribute('data-water', '');
   canvas.setAttribute('aria-hidden', 'true');
-  canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;';
+  // bleed 2% past every edge: no visible canvas borders, ever
+  canvas.style.cssText = 'position:absolute;inset:-2%;width:104%;height:104%;display:block;';
   // below the bubble field so DOM bubbles keep floating on top
   if (bubbles) host.insertBefore(canvas, bubbles); else host.appendChild(canvas);
 
@@ -182,10 +238,23 @@ function build() {
   gl.enableVertexAttribArray(loc);
   gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
+  // caustic tile: LUMINANCE, REPEAT, trilinear (mipmaps kill mobile moiré)
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, TEX, TEX, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, makeCausticTile());
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  gl.generateMipmap(gl.TEXTURE_2D);
+
   uTime = gl.getUniformLocation(prog, 'uTime');
   uRes = gl.getUniformLocation(prog, 'uRes');
   uScrollL = gl.getUniformLocation(prog, 'uScroll');
   uIntensityL = gl.getUniformLocation(prog, 'uIntensity');
+  uSeedL = gl.getUniformLocation(prog, 'uSeed');
+  gl.uniform1i(gl.getUniformLocation(prog, 'uCaustic'), 0);
+  gl.uniform2f(uSeedL, seed[0], seed[1]);
 
   resize();
   started = performance.now();
@@ -213,7 +282,7 @@ function build() {
 export function initHeroWater() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;  // fallback 1
   const preset = readPreset();
-  if (preset === 'off') return;                                               // fallback 3 (forced)
+  if (preset === 'off') return;                                               // forced CSS fallback
   intensity = preset === 'alto' ? 1.4 : 1.0;
   const go = () => { try { build(); } catch { /* keep CSS fallback */ } };
   if ('requestIdleCallback' in window) (window as any).requestIdleCallback(go, { timeout: 2000 });

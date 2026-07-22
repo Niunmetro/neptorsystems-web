@@ -68,11 +68,15 @@ Poppins (titulares), DM Sans (UI/subtítulos/botones/eyebrows), Inter (cuerpo).
 
 ## Agua del hero (shader WebGL)
 
-`src/scripts/hero-water.ts` — WebGL 1 sin librerías, un quad con fragment shader que sustituye
-las dos manchas de luz CSS: gradiente de profundidad + **caústicas** (value-noise con domain warping
-afilado a filamentos) + **rayos de sol volumétricos** (4 haces en la mitad derecha, tinte
-`#FFF6D8`/`#FFD700`, extinguidos hacia el 60 % de altura, con balanceo y temblor de baja frecuencia)
-+ dithering y viñeta izquierda que protege el contraste del H1.
+`src/scripts/hero-water.ts` — WebGL 1 sin librerías. **Técnica: textura caústica tileable
+(Voronoi toroidal, F2−F1 afilado a filamentos, generada una vez en CPU) + doble muestreo con
+`min()`** a escalas no múltiplas y velocidades distintas — el estándar de videojuegos; el `min()`
+de dos redes en movimiento produce la danza orgánica. Referencia estudiada para el listón de
+calidad: Evan Wallace, *Rendering Realtime Caustics in WebGL* (webgl-water, MIT); **ningún código
+de terceros copiado** (Shadertoy es CC BY-NC-SA y no se usó). Encima: gradiente de profundidad,
+**rayos de sol gaussianos** (4 haces, 8–18°, mitad derecha, tinte `#FFF6D8`/`#FFD700`, extinguidos
+al 60 % de altura, balanceo ±2° y respiración ±20 % por noise) + dithering y viñeta izquierda que
+protege el contraste del H1.
 
 Presupuestos: init en `requestIdleCallback` (nunca bloquea el LCP), **30 FPS**, `devicePixelRatio`
 limitado a 1.5, resolución interna al **0,70**, y **pausa total** con `document.hidden` o con el hero
