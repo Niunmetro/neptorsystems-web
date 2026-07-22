@@ -5,35 +5,79 @@ import type { PageId } from '../config';
 
 interface Props { lang: Lang; pageId: Exclude<PageId, 'home'>; title: string }
 const { lang, pageId, title } = Astro.props;
+const es = lang === 'es';
 const t = dict[lang];
 const legal = LEGAL[lang];
 const home = ALT.home[lang];
 const mailto = `mailto:${ORG.email}`;
-const backLabel = lang === 'es' ? 'Volver al inicio' : 'Back to home';
-const pendingBody = lang === 'es'
-  ? '[PENDIENTE — contenido facilitado por dirección]'
-  : '[PENDING — content provided by management]';
-const pendingNote = lang === 'es'
-  ? 'Esta página es una plantilla. El texto legal definitivo lo facilita la dirección de la empresa.'
-  : 'This page is a template. The definitive legal text is provided by company management.';
+const backLabel = es ? 'Volver al inicio' : 'Back to home';
 
-// Legal notice / Aviso legal: precharge the confirmed corporate identification.
-const isLegalNotice = pageId === 'legal';
-const countryName = lang === 'es' ? 'España' : 'Spain';
+const countryName = es ? 'España' : 'Spain';
 const fullAddress = `${ORG.streetAddress}, ${ORG.postalCode} ${ORG.addressLocality}, ${ORG.addressRegion}, ${countryName}`;
-const L = lang === 'es'
-  ? { ident: 'Identificación de la empresa', name: 'Denominación social', nif: 'NIF', office: 'Domicilio social', email: 'Correo electrónico', phone: 'Teléfono', registry: 'Datos registrales', registryPending: '[PENDIENTE — REGISTRO MERCANTIL: tomo, folio, hoja]' }
-  : { ident: 'Company identification', name: 'Company name', nif: 'Tax ID (NIF)', office: 'Registered office', email: 'Email', phone: 'Phone', registry: 'Registry details', registryPending: '[PENDING — COMMERCIAL REGISTRY: volume, sheet, page]' };
+
+// Corporate identification rows (Aviso legal / Legal notice)
+const idLabels = es
+  ? { ident: 'Identificación de la empresa', name: 'Denominación social', nif: 'NIF', office: 'Domicilio social', email: 'Correo electrónico', phone: 'Teléfono' }
+  : { ident: 'Company identification', name: 'Company name', nif: 'Tax ID (NIF)', office: 'Registered office', email: 'Email', phone: 'Phone' };
 const idRows = [
-  { label: L.name, value: ORG.name },
-  { label: L.nif, value: ORG.vatID },
-  { label: L.office, value: fullAddress },
-  { label: L.email, value: ORG.email, href: `mailto:${ORG.email}` },
-  { label: L.phone, value: ORG.phone, href: `tel:${ORG.phoneHref}` },
-  { label: L.registry, value: L.registryPending, pending: true },
+  { label: idLabels.name, value: ORG.name },
+  { label: idLabels.nif, value: ORG.vatID },
+  { label: idLabels.office, value: fullAddress },
+  { label: idLabels.email, value: ORG.email, href: mailto },
+  { label: idLabels.phone, value: ORG.phone, href: `tel:${ORG.phoneHref}` },
 ];
+
+// Per-page body copy (concise, factual — no legal drafting)
+const contactLabel = es ? 'Contacto' : 'Contact';
+const bodies: Record<string, { intro: string; paras: string[] }> = es
+  ? {
+      legal: {
+        intro: 'Datos identificativos del titular de este sitio web, conforme a la normativa vigente.',
+        paras: ['Para cualquier cuestión legal relacionada con este sitio web, utiliza el correo de contacto.'],
+      },
+      privacy: {
+        intro: 'Cómo tratamos tus datos en Neptor Systems.',
+        paras: [
+          'Este sitio web es informativo y no utiliza cookies de seguimiento, publicidad ni herramientas de analítica de terceros.',
+          'Solo tratamos los datos que nos facilitas voluntariamente —por ejemplo, si te unes a la lista de espera o nos escribes— con la finalidad de responderte e informarte sobre el desarrollo del proyecto. No cedemos tus datos a terceros.',
+          'Puedes ejercer tus derechos de acceso, rectificación o supresión a través del correo de contacto.',
+        ],
+      },
+      cookies: {
+        intro: 'Uso de cookies en este sitio web.',
+        paras: [
+          'Este sitio web no utiliza cookies de terceros, de analítica ni de publicidad, y no realiza seguimiento de tu navegación.',
+          'Únicamente podrían emplearse almacenamientos técnicos imprescindibles para el correcto funcionamiento de la página.',
+          'Si tienes cualquier duda, utiliza el correo de contacto.',
+        ],
+      },
+    }
+  : {
+      legal: {
+        intro: 'Identifying details of the owner of this website, in accordance with applicable regulations.',
+        paras: ['For any legal matter regarding this website, please use the contact email.'],
+      },
+      privacy: {
+        intro: 'How we handle your data at Neptor Systems.',
+        paras: [
+          'This website is informational and uses no tracking, advertising or third-party analytics cookies.',
+          'We only process the data you voluntarily provide —for example, if you join the waitlist or contact us— in order to reply and keep you informed about the project’s development. We do not share your data with third parties.',
+          'You can exercise your rights of access, rectification or erasure through the contact email.',
+        ],
+      },
+      cookies: {
+        intro: 'Use of cookies on this website.',
+        paras: [
+          'This website uses no third-party, analytics or advertising cookies, and does not track your browsing.',
+          'Only technical storage strictly necessary for the page to function may be used.',
+          'If you have any questions, please use the contact email.',
+        ],
+      },
+    };
+const body = bodies[pageId];
+const isLegalNotice = pageId === 'legal';
 ---
-<a class="skip-link" href="#main">{lang === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
+<a class="skip-link" href="#main">{es ? 'Saltar al contenido' : 'Skip to content'}</a>
 
 <header style="background:var(--navy-900);">
   <div style="max-width:900px;margin:0 auto;padding:18px clamp(20px,5vw,40px);display:flex;align-items:center;justify-content:space-between;gap:20px;">
@@ -48,16 +92,16 @@ const idRows = [
   <div style="max-width:760px;margin:0 auto;padding:clamp(56px,9vw,96px) clamp(20px,5vw,40px);">
     <div style="font-family:var(--font-ui);font-size:12px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--aqua-700);">{ORG.name}</div>
     <h1 style="font-family:var(--font-heading);font-weight:700;font-size:clamp(2rem,4vw,2.75rem);line-height:1.1;letter-spacing:-0.02em;color:var(--navy-800);margin:14px 0 0;">{title}</h1>
-    <p style="font-family:var(--font-body);font-size:15px;line-height:1.6;color:var(--ink-400);margin:14px 0 0;">{pendingNote}</p>
+    <p style="font-family:var(--font-body);font-size:17px;line-height:1.6;color:var(--ink-500);margin:16px 0 0;">{body.intro}</p>
 
     {isLegalNotice && (
-      <section aria-label={L.ident} style="margin-top:clamp(32px,5vw,48px);padding:clamp(28px,4vw,40px);background:#fff;border:1px solid var(--line-200);border-radius:18px;box-shadow:var(--shadow-sm);">
-        <h2 style="font-family:var(--font-heading);font-weight:600;font-size:20px;color:var(--navy-800);margin:0 0 18px;">{L.ident}</h2>
+      <section aria-label={idLabels.ident} style="margin-top:clamp(32px,5vw,48px);padding:clamp(28px,4vw,40px);background:#fff;border:1px solid var(--line-200);border-radius:18px;box-shadow:var(--shadow-sm);">
+        <h2 style="font-family:var(--font-heading);font-weight:600;font-size:20px;color:var(--navy-800);margin:0 0 18px;">{idLabels.ident}</h2>
         <dl style="margin:0;display:grid;grid-template-columns:1fr;gap:14px;">
           {idRows.map((r) => (
             <div class="legal-id-row">
               <dt style="font-family:var(--font-ui);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-400);">{r.label}</dt>
-              <dd style={`margin:0;font-family:var(--font-body);font-size:16px;line-height:1.5;${r.pending ? 'color:var(--ink-400);font-style:italic;' : 'color:var(--ink-700);'}`}>
+              <dd style="margin:0;font-family:var(--font-body);font-size:16px;line-height:1.5;color:var(--ink-700);">
                 {r.href ? <a href={r.href} style="color:var(--aqua-700);">{r.value}</a> : r.value}
               </dd>
             </div>
@@ -66,8 +110,13 @@ const idRows = [
       </section>
     )}
 
-    <div style="margin-top:clamp(28px,4vw,40px);padding:clamp(28px,4vw,40px);background:var(--aqua-050);border:1px solid var(--aqua-100);border-radius:18px;">
-      <p style="font-family:var(--font-body);font-size:17px;line-height:1.7;color:var(--ink-500);margin:0;">{pendingBody}</p>
+    <div style="margin-top:clamp(28px,4vw,40px);">
+      {body.paras.map((p) => (
+        <p style="font-family:var(--font-body);font-size:17px;line-height:1.7;color:var(--ink-700);margin:0 0 16px;">{p}</p>
+      ))}
+      <p style="font-family:var(--font-body);font-size:16px;line-height:1.6;color:var(--ink-500);margin:20px 0 0;">
+        {contactLabel}: <a href={mailto} style="color:var(--aqua-700);">{ORG.email}</a>
+      </p>
     </div>
   </div>
 </main>
