@@ -40,7 +40,7 @@ function initBubbles() {
 function initHeroIntro() {
   if (reduce) return;
   const els = Array.from(document.querySelectorAll<HTMLElement>('[data-hs]'));
-  const delays = [0, 120, 260, 380, 440, 520];
+  const delays = [0, 120, 260, 380, 440, 500, 560];
   els.forEach((el, i) => {
     const d = delays[i] != null ? delays[i] : i * 90;
     el.style.opacity = '0';

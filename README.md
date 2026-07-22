@@ -92,12 +92,18 @@ Ejecutado sobre `./dist` tras `npm run build`:
 - **PUBLICADO** en https://neptorsystems.com (+ `/en/`) sobre **GitHub Pages**. Repo: `Niunmetro/neptorsystems-web` (público); deploy automático por GitHub Actions en cada push a `main`. DNS en IONOS: `A` de `@` y `www` → `185.199.108.153`. HTTPS (Let's Encrypt) gratuito; queda que GitHub emita el certificado y activar "enforce HTTPS".
 - **Fotos** (hero piscina + origen taller) — ✅ **HECHO**: integradas y optimizadas (AVIF/WebP/JPG responsive vía `ImageSlot`, `alt` por idioma).
 - **Logos oficiales** — ✅ **HECHO**: lockup blanco/navy = isotipo real de la gota + "NEPTOR SYSTEMS" (navy oficial muestreado); favicon e íconos del asset real.
-- **Identificación corporativa** — ✅ **HECHO**: `ORG` en `config.ts` (NIF `B75815704`, domicilio social completo), JSON-LD Organization con `vatID` + `PostalAddress`, y Aviso Legal / Legal notice con la identificación precargada.
+- **Identificación corporativa** — ✅ **HECHO**: `ORG` en `config.ts` (NIF `B75815704`, `legalForm`, domicilio social completo), JSON-LD Organization con `vatID` + `PostalAddress`, y páginas legales con la identificación completa.
+- **Páginas legales** — ✅ **HECHO**: contenido portado desde OLDWEB a `src/i18n/legal.ts` (Aviso Legal, Privacidad, Cookies × ES/EN), identificación normalizada, finalidad adaptada (sin demos comerciales / productos B2B), fecha de última actualización visible. Único marcador que queda: `[PENDIENTE — REGISTRO MERCANTIL: tomo, folio, hoja]` en el Aviso Legal / Legal notice.
 
 ## Pendientes (owner / dirección)
 
 - **Endpoint del formulario** — fijar `FORM_ENDPOINT` y poner `WAITLIST_ENABLED=true` cuando el proveedor esté listo (Formspree free sirve).
-- **Contenido legal** — el Aviso Legal ya precarga denominación, NIF, domicilio, email y teléfono; falta **[PENDIENTE — REGISTRO MERCANTIL: tomo, folio, hoja]** y el resto del texto legal. **Privacidad** y **Cookies** siguen como plantilla `[PENDIENTE]`. No se redacta contenido legal; la dirección aporta el texto.
+- **Registro Mercantil** — facilitar tomo, folio y hoja para sustituir el `[PENDIENTE]` del Aviso Legal.
+- **Logos vectoriales oficiales** — sustituir `public/assets/logo-neptor-white.png` y `logo-neptor-navy.png` por los **vectores oficiales (SVG)** cuando los facilite **IDEA Design**; van en las mismas rutas y **no requieren cambios de código**.
 - **`[PENDIENTE-VÍDEO]`** — "El origen" (S8) funciona con foto; activar `ORIGIN_VIDEO_ENABLED` cuando exista el vídeo + subtítulos.
+- **SEO post-publicación** — alta en **Google Search Console**, envío del `sitemap.xml` y solicitud de indexación de `/` y `/en/`.
 - **Lighthouse móvil ≥95 ×4** — ejecutar en CI/Chrome sobre `/` y `/en/`.
-- **SEO post-publicación** — alta en Google Search Console y solicitud de reindexación.
+
+## Mantenimiento
+
+- **Cifras de la sección "Una epidemia silenciosa"** (`s3bStat*`/`s3bSource` en `src/i18n/copy.ts`): datos de la **RFESS** de carácter **estacional**. Revisar antes de cada publicación y **actualizar el dato del año cerrado cada mes de enero**.

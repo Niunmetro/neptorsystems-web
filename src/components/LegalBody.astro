@@ -2,6 +2,7 @@
 import { dict, type Lang } from '../i18n/copy';
 import { ALT, LEGAL, ORG } from '../config';
 import type { PageId } from '../config';
+import { getLegalDoc, type LegalKey } from '../i18n/legal';
 
 interface Props { lang: Lang; pageId: Exclude<PageId, 'home'>; title: string }
 const { lang, pageId, title } = Astro.props;
@@ -12,70 +13,20 @@ const home = ALT.home[lang];
 const mailto = `mailto:${ORG.email}`;
 const backLabel = es ? 'Volver al inicio' : 'Back to home';
 
-const countryName = es ? 'España' : 'Spain';
-const fullAddress = `${ORG.streetAddress}, ${ORG.postalCode} ${ORG.addressLocality}, ${ORG.addressRegion}, ${countryName}`;
+const doc = getLegalDoc(lang, pageId as LegalKey);
 
-// Corporate identification rows (Aviso legal / Legal notice)
-const idLabels = es
-  ? { ident: 'Identificación de la empresa', name: 'Denominación social', nif: 'NIF', office: 'Domicilio social', email: 'Correo electrónico', phone: 'Teléfono' }
-  : { ident: 'Company identification', name: 'Company name', nif: 'Tax ID (NIF)', office: 'Registered office', email: 'Email', phone: 'Phone' };
-const idRows = [
-  { label: idLabels.name, value: ORG.name },
-  { label: idLabels.nif, value: ORG.vatID },
-  { label: idLabels.office, value: fullAddress },
-  { label: idLabels.email, value: ORG.email, href: mailto },
-  { label: idLabels.phone, value: ORG.phone, href: `tel:${ORG.phoneHref}` },
-];
-
-// Per-page body copy (concise, factual — no legal drafting)
-const contactLabel = es ? 'Contacto' : 'Contact';
-const bodies: Record<string, { intro: string; paras: string[] }> = es
-  ? {
-      legal: {
-        intro: 'Datos identificativos del titular de este sitio web, conforme a la normativa vigente.',
-        paras: ['Para cualquier cuestión legal relacionada con este sitio web, utiliza el correo de contacto.'],
-      },
-      privacy: {
-        intro: 'Cómo tratamos tus datos en Neptor Systems.',
-        paras: [
-          'Este sitio web es informativo y no utiliza cookies de seguimiento, publicidad ni herramientas de analítica de terceros.',
-          'Solo tratamos los datos que nos facilitas voluntariamente —por ejemplo, si te unes a la lista de espera o nos escribes— con la finalidad de responderte e informarte sobre el desarrollo del proyecto. No cedemos tus datos a terceros.',
-          'Puedes ejercer tus derechos de acceso, rectificación o supresión a través del correo de contacto.',
-        ],
-      },
-      cookies: {
-        intro: 'Uso de cookies en este sitio web.',
-        paras: [
-          'Este sitio web no utiliza cookies de terceros, de analítica ni de publicidad, y no realiza seguimiento de tu navegación.',
-          'Únicamente podrían emplearse almacenamientos técnicos imprescindibles para el correcto funcionamiento de la página.',
-          'Si tienes cualquier duda, utiliza el correo de contacto.',
-        ],
-      },
-    }
-  : {
-      legal: {
-        intro: 'Identifying details of the owner of this website, in accordance with applicable regulations.',
-        paras: ['For any legal matter regarding this website, please use the contact email.'],
-      },
-      privacy: {
-        intro: 'How we handle your data at Neptor Systems.',
-        paras: [
-          'This website is informational and uses no tracking, advertising or third-party analytics cookies.',
-          'We only process the data you voluntarily provide —for example, if you join the waitlist or contact us— in order to reply and keep you informed about the project’s development. We do not share your data with third parties.',
-          'You can exercise your rights of access, rectification or erasure through the contact email.',
-        ],
-      },
-      cookies: {
-        intro: 'Use of cookies on this website.',
-        paras: [
-          'This website uses no third-party, analytics or advertising cookies, and does not track your browsing.',
-          'Only technical storage strictly necessary for the page to function may be used.',
-          'If you have any questions, please use the contact email.',
-        ],
-      },
-    };
-const body = bodies[pageId];
-const isLegalNotice = pageId === 'legal';
+// Inline token map: [[email]] / [[privacy]] / [[aepd]] -> link parts
+const tokens: Record<string, { label: string; href: string; external?: boolean }> = {
+  email: { label: ORG.email, href: mailto },
+  privacy: { label: es ? 'Política de Privacidad' : 'Privacy Policy', href: legal.privacy },
+  aepd: { label: 'www.aepd.es', href: 'https://www.aepd.es', external: true },
+};
+function parts(text: string) {
+  return text.split(/(\[\[(?:email|privacy|aepd)\]\])/g).map((seg) => {
+    const m = seg.match(/^\[\[(email|privacy|aepd)\]\]$/);
+    return m ? { tok: tokens[m[1]] } : { text: seg };
+  });
+}
 ---
 <a class="skip-link" href="#main">{es ? 'Saltar al contenido' : 'Skip to content'}</a>
 
@@ -91,33 +42,49 @@ const isLegalNotice = pageId === 'legal';
 <main id="main" style="min-height:60vh;">
   <div style="max-width:760px;margin:0 auto;padding:clamp(56px,9vw,96px) clamp(20px,5vw,40px);">
     <div style="font-family:var(--font-ui);font-size:12px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--aqua-700);">{ORG.name}</div>
-    <h1 style="font-family:var(--font-heading);font-weight:700;font-size:clamp(2rem,4vw,2.75rem);line-height:1.1;letter-spacing:-0.02em;color:var(--navy-800);margin:14px 0 0;">{title}</h1>
-    <p style="font-family:var(--font-body);font-size:17px;line-height:1.6;color:var(--ink-500);margin:16px 0 0;">{body.intro}</p>
+    <h1 style="font-family:var(--font-heading);font-weight:700;font-size:clamp(2rem,4vw,2.75rem);line-height:1.1;letter-spacing:-0.02em;color:var(--navy-800);margin:14px 0 clamp(28px,4vw,40px);">{title}</h1>
 
-    {isLegalNotice && (
-      <section aria-label={idLabels.ident} style="margin-top:clamp(32px,5vw,48px);padding:clamp(28px,4vw,40px);background:#fff;border:1px solid var(--line-200);border-radius:18px;box-shadow:var(--shadow-sm);">
-        <h2 style="font-family:var(--font-heading);font-weight:600;font-size:20px;color:var(--navy-800);margin:0 0 18px;">{idLabels.ident}</h2>
-        <dl style="margin:0;display:grid;grid-template-columns:1fr;gap:14px;">
-          {idRows.map((r) => (
-            <div class="legal-id-row">
-              <dt style="font-family:var(--font-ui);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-400);">{r.label}</dt>
-              <dd style="margin:0;font-family:var(--font-body);font-size:16px;line-height:1.5;color:var(--ink-700);">
-                {r.href ? <a href={r.href} style="color:var(--aqua-700);">{r.value}</a> : r.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
+    {doc.sections.map((sec) => (
+      <section style="margin-top:clamp(28px,3.5vw,40px);">
+        <h2 style="font-family:var(--font-heading);font-weight:600;font-size:clamp(1.2rem,1.9vw,1.4rem);color:var(--navy-800);margin:0 0 12px;">{sec.h2}</h2>
+        {sec.blocks.map((b) => (
+          <>
+            {'p' in b && (
+              <p style="font-family:var(--font-body);font-size:16px;line-height:1.7;color:var(--ink-700);margin:0 0 12px;">
+                {parts(b.p).map((seg) => (seg.tok
+                  ? <a href={seg.tok.href} style="color:var(--aqua-700);" {...(seg.tok.external ? { target: '_blank', rel: 'noopener' } : {})}>{seg.tok.label}</a>
+                  : <>{seg.text}</>))}
+              </p>
+            )}
+            {'ul' in b && (
+              <ul style="margin:0 0 12px;padding-left:22px;display:flex;flex-direction:column;gap:8px;">
+                {b.ul.map((li) => (
+                  <li style="font-family:var(--font-body);font-size:16px;line-height:1.6;color:var(--ink-700);">
+                    {parts(li).map((seg) => (seg.tok
+                      ? <a href={seg.tok.href} style="color:var(--aqua-700);" {...(seg.tok.external ? { target: '_blank', rel: 'noopener' } : {})}>{seg.tok.label}</a>
+                      : <>{seg.text}</>))}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {'defs' in b && (
+              <dl style="margin:6px 0 12px;display:grid;grid-template-columns:1fr;gap:12px;">
+                {b.defs.map((d) => (
+                  <div class="legal-id-row">
+                    <dt style="font-family:var(--font-ui);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-400);">{d.term}</dt>
+                    <dd style="margin:0;font-family:var(--font-body);font-size:16px;line-height:1.5;color:var(--ink-700);">
+                      {d.href ? <a href={d.href} style="color:var(--aqua-700);">{d.value}</a> : d.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+          </>
+        ))}
       </section>
-    )}
+    ))}
 
-    <div style="margin-top:clamp(28px,4vw,40px);">
-      {body.paras.map((p) => (
-        <p style="font-family:var(--font-body);font-size:17px;line-height:1.7;color:var(--ink-700);margin:0 0 16px;">{p}</p>
-      ))}
-      <p style="font-family:var(--font-body);font-size:16px;line-height:1.6;color:var(--ink-500);margin:20px 0 0;">
-        {contactLabel}: <a href={mailto} style="color:var(--aqua-700);">{ORG.email}</a>
-      </p>
-    </div>
+    <p style="font-family:var(--font-ui);font-size:13px;color:var(--ink-400);margin:clamp(36px,5vw,48px) 0 0;">{doc.updated}</p>
   </div>
 </main>
 

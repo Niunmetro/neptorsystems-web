@@ -6,6 +6,7 @@ export const SITE = 'https://neptorsystems.com';
 export const ORG = {
   name: 'NEPTOR SYSTEMS SL',
   vatID: 'B75815704',
+  legalForm: 'Sociedad Limitada',
   email: 'connect@neptorsystems.com',
   phone: '+34 652 34 00 14',
   phoneHref: '+34652340014',
