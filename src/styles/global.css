@@ -45,7 +45,7 @@ a:hover { color: var(--accent-strong); }
 strong { font-weight: var(--fw-semibold); color: var(--text-heading); }
 small { font-size: var(--fs-xs); }
 
-::selection { background: var(--aqua-100); color: var(--navy-800); }
+::selection { background: #00C2D1; color: #06152F; }
 
 /* Focus visible — aqua ring on every interactive element */
 :focus-visible {
@@ -198,7 +198,8 @@ small { font-size: var(--fs-xs); }
   color: var(--navy-800);
   letter-spacing: 0.01em;
 }
-.field input {
+.field input,
+.field select {
   font-family: var(--font-body);
   font-size: 16px;
   color: var(--ink-700);
@@ -209,8 +210,20 @@ small { font-size: var(--fs-xs); }
   width: 100%;
   transition: border-color var(--dur-base) var(--ease-standard), box-shadow var(--dur-base) var(--ease-standard);
 }
+.field select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  /* chevron */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238A909C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+}
+.field select:invalid { color: var(--ink-400); }
 .field input::placeholder { color: var(--ink-400); }
-.field input:focus {
+.field input:focus,
+.field select:focus {
   outline: none;
   border-color: var(--aqua-500);
   box-shadow: var(--focus-ring);

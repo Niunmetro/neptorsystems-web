@@ -66,6 +66,41 @@ Poppins (titulares), DM Sans (UI/subtítulos/botones/eyebrows), Inter (cuerpo).
 | `ORIGIN_VIDEO_ENABLED` | `false` | Reservado para el reproductor propio de "El origen" (S8). `false`: la sección funciona con la foto. Al activarlo habrá que añadir el vídeo mp4/webm self-hosted y subtítulos `.vtt` ES/EN. |
 | `FORM_ENDPOINT` | env `FORM_ENDPOINT` | Endpoint del formulario. Solo se usa con `WAITLIST_ENABLED=true`. |
 
+## Agua del hero (shader WebGL)
+
+`src/scripts/hero-water.ts` — WebGL 1 sin librerías, un quad con fragment shader que sustituye
+las dos manchas de luz CSS: gradiente de profundidad + **caústicas** (value-noise con domain warping
+afilado a filamentos) + **rayos de sol volumétricos** (4 haces en la mitad derecha, tinte
+`#FFF6D8`/`#FFD700`, extinguidos hacia el 60 % de altura, con balanceo y temblor de baja frecuencia)
++ dithering y viñeta izquierda que protege el contraste del H1.
+
+Presupuestos: init en `requestIdleCallback` (nunca bloquea el LCP), **30 FPS**, `devicePixelRatio`
+limitado a 1.5, resolución interna al **0,70**, y **pausa total** con `document.hidden` o con el hero
+fuera de viewport (IntersectionObserver). `uScroll` se alimenta del rAF ya existente de `motion.ts`
+(cero listeners de scroll nuevos). JS total del sitio: **~5 KB gzip**.
+
+**Fallbacks** (en este orden): `prefers-reduced-motion` → sin canvas; sin WebGL → se conserva el
+efecto CSS animado (`[data-amb]` + `neptorGlowDrift`, que por eso NO se borra); con shader activo →
+los `[data-amb]` pasan a `opacity:0`. Las burbujas DOM siguen flotando por encima del canvas.
+
+### Afinado en vivo: `?agua=`
+| Preset | Efecto |
+|---|---|
+| `?agua=suave` | **Por defecto.** Caústicas α≈0.17, rayos α≈0.075. |
+| `?agua=alto` | +40 % de intensidad (para comparar en revisión). |
+| `?agua=off` | Fuerza el fallback CSS (sin canvas). |
+
+## Formulario de lista de espera
+
+`WAITLIST_ENABLED = true`. El formulario recoge **Nombre, Email y Tipo (Particular / Empresa /
+Entidad)** + consentimiento, y hace POST a `FORM_ENDPOINT`; el aviso llega **por email**.
+`src/scripts/waitlist.ts` lo envía en segundo plano (fetch) y muestra el estado en línea; **sin JS
+funciona igual** con un POST normal. Honeypot `_honey` incluido.
+
+Por defecto usa **FormSubmit.co** (sin cuenta): el primer envío manda un **email de activación** a
+`connect@neptorsystems.com` que hay que confirmar una sola vez. Para cambiar de proveedor
+(p. ej. Formspree), define la variable de entorno `FORM_ENDPOINT` con la URL nueva: el resto no cambia.
+
 ## Movimiento
 
 `src/scripts/motion.ts`, portado del runtime del diseño. Reglas: curva única
@@ -97,7 +132,7 @@ Ejecutado sobre `./dist` tras `npm run build`:
 
 ## Pendientes (owner / dirección)
 
-- **Endpoint del formulario** — fijar `FORM_ENDPOINT` y poner `WAITLIST_ENABLED=true` cuando el proveedor esté listo (Formspree free sirve).
+- **Activar el formulario (1 clic)** — el formulario ya está ON y envía a FormSubmit.co. En el **primer envío** llega un email de activación a `connect@neptorsystems.com`: hay que **pulsar el enlace una sola vez** y a partir de ahí los avisos llegan solos. (Si se prefiere otro proveedor, cambiar `FORM_ENDPOINT`.)
 - **Registro Mercantil** — facilitar tomo, folio y hoja para sustituir el `[PENDIENTE]` del Aviso Legal.
 - **Logos vectoriales oficiales** — sustituir `public/assets/logo-neptor-white.png` y `logo-neptor-navy.png` por los **vectores oficiales (SVG)** cuando los facilite **IDEA Design**; van en las mismas rutas y **no requieren cambios de código**.
 - **`[PENDIENTE-VÍDEO]`** — "El origen" (S8) funciona con foto; activar `ORIGIN_VIDEO_ENABLED` cuando exista el vídeo + subtítulos.

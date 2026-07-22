@@ -62,7 +62,7 @@ const originAlt = lang === 'es'
   <!-- ============ S1 · HERO ============ -->
   <section data-hero style="position:relative;overflow:hidden;background:linear-gradient(180deg,var(--navy-900) 0%,var(--navy-800) 62%,#0C2450 100%);">
     <div aria-hidden="true" style="position:absolute;inset:0;background:radial-gradient(90% 70% at 78% -10%, rgba(0,194,209,0.24) 0%, rgba(0,194,209,0) 55%), radial-gradient(60% 50% at 8% 108%, rgba(0,194,209,0.10) 0%, rgba(0,194,209,0) 60%);"></div>
-    <div aria-hidden="true" style="position:absolute;inset:0;overflow:hidden;pointer-events:none;"><div data-amb style="position:absolute;inset:-25%;background:radial-gradient(45% 38% at 30% 42%, rgba(0,194,209,0.20) 0%, rgba(0,194,209,0) 70%);animation:neptorGlowDrift 15s ease-in-out infinite;"></div><div data-amb style="position:absolute;inset:-25%;background:radial-gradient(40% 34% at 70% 30%, rgba(0,194,209,0.16) 0%, rgba(0,194,209,0) 72%);animation:neptorGlowDrift 16.5s ease-in-out infinite reverse;"></div><div data-bubblefield aria-hidden="true" style="position:absolute;inset:0;"></div></div>
+    <div data-ambient aria-hidden="true" style="position:absolute;inset:0;overflow:hidden;pointer-events:none;"><div data-amb style="position:absolute;inset:-25%;background:radial-gradient(45% 38% at 30% 42%, rgba(0,194,209,0.20) 0%, rgba(0,194,209,0) 70%);animation:neptorGlowDrift 15s ease-in-out infinite;"></div><div data-amb style="position:absolute;inset:-25%;background:radial-gradient(40% 34% at 70% 30%, rgba(0,194,209,0.16) 0%, rgba(0,194,209,0) 72%);animation:neptorGlowDrift 16.5s ease-in-out infinite reverse;"></div><div data-bubblefield aria-hidden="true" style="position:absolute;inset:0;"></div></div>
     <div style="position:relative;max-width:1220px;margin:0 auto;padding:clamp(136px,17vw,184px) clamp(20px,5vw,40px) clamp(140px,15vw,180px);">
       <div data-hero-grid style="display:grid;grid-template-columns:1.02fr 0.98fr;gap:clamp(40px,6vw,88px);align-items:center;">
         <div>
@@ -112,14 +112,14 @@ const originAlt = lang === 'es'
       </div>
     </div>
     <div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:0;height:110px;overflow:hidden;pointer-events:none;">
-      <div data-wave-anim style="position:absolute;bottom:26px;left:0;width:200%;height:64px;animation:neptorWaveDrift 34s linear infinite;">
-        <svg viewBox="0 0 2880 60" preserveAspectRatio="none" style="width:100%;height:100%;display:block;"><path d="M0,30 C120,10 240,10 360,30 S600,50 720,30 S960,10 1080,30 S1320,50 1440,30 S1680,10 1800,30 S2040,50 2160,30 S2400,10 2520,30 S2760,50 2880,30" fill="none" stroke="var(--aqua-500)" stroke-width="1.5" vector-effect="non-scaling-stroke" opacity="0.5"/></svg>
+      <div data-wave-anim style="position:absolute;bottom:20px;left:0;width:200%;height:64px;animation:neptorWaveDrift 9s linear infinite;">
+        <svg viewBox="0 0 2880 60" preserveAspectRatio="none" style="width:100%;height:100%;display:block;">
+          <path d="M0,31 C120,11 240,11 360,31 S600,51 720,31 S960,11 1080,31 S1320,51 1440,31 S1680,11 1800,31 S2040,51 2160,31 S2400,11 2520,31 S2760,51 2880,31" fill="none" stroke="var(--aqua-500)" stroke-width="1.5" vector-effect="non-scaling-stroke" opacity="0.5"/>
+          <path d="M0,30 C120,10 240,10 360,30 S600,50 720,30 S960,10 1080,30 S1320,50 1440,30 S1680,10 1800,30 S2040,50 2160,30 S2400,10 2520,30 S2760,50 2880,30" fill="none" stroke="var(--aqua-300)" stroke-width="1" vector-effect="non-scaling-stroke" opacity="0.5"/>
+        </svg>
       </div>
-      <div data-wave-anim style="position:absolute;bottom:12px;left:0;width:200%;height:64px;animation:neptorWaveDrift 48s linear infinite;">
-        <svg viewBox="0 0 2880 60" preserveAspectRatio="none" style="width:100%;height:100%;display:block;"><path d="M0,30 C120,10 240,10 360,30 S600,50 720,30 S960,10 1080,30 S1320,50 1440,30 S1680,10 1800,30 S2040,50 2160,30 S2400,10 2520,30 S2760,50 2880,30" fill="none" stroke="var(--aqua-300)" stroke-width="1.5" vector-effect="non-scaling-stroke" opacity="0.3"/></svg>
-      </div>
-      <div data-wave-anim style="position:absolute;bottom:0;left:0;width:200%;height:64px;animation:neptorWaveDrift 62s linear infinite;">
-        <svg viewBox="0 0 2880 60" preserveAspectRatio="none" style="width:100%;height:100%;display:block;"><path d="M0,30 C120,10 240,10 360,30 S600,50 720,30 S960,10 1080,30 S1320,50 1440,30 S1680,10 1800,30 S2040,50 2160,30 S2400,10 2520,30 S2760,50 2880,30" fill="none" stroke="#fff" stroke-width="1" vector-effect="non-scaling-stroke" opacity="0.14"/></svg>
+      <div data-wave-anim style="position:absolute;bottom:2px;left:0;width:200%;height:64px;animation:neptorWaveDrift 13s linear infinite;animation-delay:-4.5s;">
+        <svg viewBox="0 0 2880 60" preserveAspectRatio="none" style="width:100%;height:100%;display:block;"><path d="M0,26 C140,44 280,44 420,26 S700,8 840,26 S1120,44 1260,26 S1540,8 1680,26 S1960,44 2100,26 S2380,8 2520,26 S2800,44 2880,30" fill="none" stroke="var(--aqua-300)" stroke-width="1.5" vector-effect="non-scaling-stroke" opacity="0.3"/></svg>
       </div>
     </div>
   </section>
@@ -459,23 +459,39 @@ const originAlt = lang === 'es'
           <h3 style="font-family:var(--font-heading);font-weight:600;font-size:clamp(1.45rem,2.5vw,1.85rem);line-height:1.18;letter-spacing:-0.01em;color:var(--navy-800);margin:14px 0 0;text-wrap:balance;">{t.famH3}</h3>
           <p style="font-family:var(--font-body);font-size:16px;line-height:1.62;color:var(--ink-700);margin:14px 0 0;">{t.famText}</p>
           <form
+            data-waitlist={WAITLIST_ENABLED ? 'on' : 'off'}
+            data-ok={t.fOk}
+            data-err={t.fErr}
+            data-sending={t.fSending}
             style="margin-top:26px;display:flex;flex-direction:column;gap:16px;"
             method={WAITLIST_ENABLED ? 'POST' : undefined}
             action={WAITLIST_ENABLED ? FORM_ENDPOINT : undefined}
-            data-waitlist={WAITLIST_ENABLED ? 'on' : 'off'}
           >
             <div class="field">
               <label for="wl-name">{t.fName}</label>
-              <input id="wl-name" name="name" type="text" placeholder={t.fNamePh} autocomplete="name" required={WAITLIST_ENABLED} />
+              <input id="wl-name" name="Nombre" type="text" placeholder={t.fNamePh} autocomplete="name" required={WAITLIST_ENABLED} />
             </div>
             <div class="field">
               <label for="wl-email">Email</label>
-              <input id="wl-email" name="email" type="email" placeholder={t.fEmailPh} autocomplete="email" required={WAITLIST_ENABLED} />
+              <input id="wl-email" name="Email" type="email" placeholder={t.fEmailPh} autocomplete="email" required={WAITLIST_ENABLED} />
+            </div>
+            <div class="field">
+              <label for="wl-type">{t.fType}</label>
+              <select id="wl-type" name="Tipo" required={WAITLIST_ENABLED}>
+                <option value="" disabled selected>{t.fTypeSelect}</option>
+                <option value="Particular">{t.fTypeParticular}</option>
+                <option value="Empresa">{t.fTypeEmpresa}</option>
+                <option value="Entidad">{t.fTypeEntidad}</option>
+              </select>
             </div>
             {/* Honeypot — hidden from users, catches bots */}
-            <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" />
+            <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" />
+            <input type="hidden" name="_subject" value="Nueva alta en la lista de espera — Neptor Systems" />
+            <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" name="_template" value="table" />
+            <input type="hidden" name="Idioma" value={lang === 'es' ? 'Español' : 'English'} />
             <div class="checkbox-row">
-              <input id="wl-consent" class="checkbox" type="checkbox" name="consent" required={WAITLIST_ENABLED} />
+              <input id="wl-consent" class="checkbox" type="checkbox" name="Consentimiento" value="Sí" required={WAITLIST_ENABLED} />
               <label for="wl-consent" style="font-family:var(--font-body);font-size:13.5px;line-height:1.55;color:var(--ink-500);">{t.consent1}<a href={legal.privacy} style="color:var(--aqua-700);text-decoration:underline;text-underline-offset:2px;">{t.consentLink}</a>{t.consent2}</label>
             </div>
             {WAITLIST_ENABLED ? (
@@ -483,6 +499,7 @@ const originAlt = lang === 'es'
             ) : (
               <a class="btn btn--gold btn--lg btn--block" href={waitlistMailto}>{t.ctaJoinForm}</a>
             )}
+            <p data-form-status role="status" aria-live="polite" style="display:none;font-family:var(--font-body);font-size:14.5px;line-height:1.55;margin:0;"></p>
           </form>
         </div>
         <div style="background:var(--navy-800);background-image:radial-gradient(90% 80% at 85% -10%, rgba(0,194,209,0.16) 0%, rgba(0,194,209,0) 55%);border-radius:22px;padding:clamp(30px,4.5vw,52px);display:flex;flex-direction:column;position:relative;overflow:hidden;">

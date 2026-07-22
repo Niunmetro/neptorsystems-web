@@ -22,12 +22,17 @@ export const ORG = {
 };
 
 /* ---- Feature flags ---- */
-// Waitlist form: OFF → the block keeps its design but the CTA is a mailto.
-export const WAITLIST_ENABLED = false;
+// Waitlist form: ON → the form POSTs to FORM_ENDPOINT and the lead arrives by email.
+// OFF → the block keeps its design but the CTA is a mailto.
+export const WAITLIST_ENABLED = true;
 // "El origen" self-hosted video player in S8. OFF → photo slot only.
 export const ORIGIN_VIDEO_ENABLED = false;
-// Form submission endpoint (only used when WAITLIST_ENABLED). Empty until wired.
-export const FORM_ENDPOINT = import.meta.env.FORM_ENDPOINT ?? '';
+/* Form submission endpoint (used when WAITLIST_ENABLED).
+   Default: FormSubmit.co — no account needed; the first submission sends a one-time
+   activation link to ORG.email. Swap for a Formspree URL (or any POST endpoint)
+   by setting the FORM_ENDPOINT env var; the form works the same. */
+export const FORM_ENDPOINT =
+  import.meta.env.FORM_ENDPOINT ?? 'https://formsubmit.co/connect@neptorsystems.com';
 
 /* ---- Per-language SEO + OG ---- */
 export const SEO = {

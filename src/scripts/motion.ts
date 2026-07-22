@@ -4,8 +4,11 @@
    prefers-reduced-motion, and content is always visible without JS (this script only
    hides-then-reveals; if it never runs, nothing is hidden). */
 
+import { initHeroWater, setHeroScroll } from './hero-water';
+
 const EASE = 'cubic-bezier(0.16,1,0.3,1)';
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let heroEl: HTMLElement | null = null;
 
 const state = {
   raf: 0 as number,
@@ -106,6 +109,8 @@ function onScroll() {
     updateSpy();
     updateFlow();
     updateParallax(y);
+    // feed the hero shader from this same rAF tick (no extra scroll listeners)
+    if (heroEl) setHeroScroll(Math.min(1, Math.max(0, y / Math.max(1, heroEl.offsetHeight))));
   });
 }
 
@@ -229,9 +234,11 @@ function handleVisibility() {
 }
 
 function boot() {
+  heroEl = document.querySelector<HTMLElement>('[data-hero]');
   initHeroIntro();
   initReveals();
   initBubbles();
+  initHeroWater();
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll, { passive: true });
   document.addEventListener('visibilitychange', handleVisibility);
