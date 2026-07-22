@@ -15,3 +15,7 @@ design/_*.txt
 design/_*.json
 design/gfonts.css
 design/_preview.log
+# internal docs — kept local, never published
+BRIEF.md
+ESTADO.md
+design/
