@@ -7,6 +7,9 @@ export const ORG = {
   name: 'NEPTOR SYSTEMS SL',
   vatID: 'B75815704',
   legalForm: 'Sociedad Limitada',
+  // Datos registrales (tomo, folio, hoja). Vacío = no se muestra la fila.
+  // Cuando la dirección los facilite, poner aquí p.ej. 'Tomo X, Folio Y, Hoja Z' y aparece solo.
+  registryDetails: '',
   email: 'connect@neptorsystems.com',
   phone: '+34 652 34 00 14',
   phoneHref: '+34652340014',

@@ -27,10 +27,6 @@ const addr = {
   es: 'Avenida de Europa 15, 28224, Pozuelo de Alarcón (Madrid), España',
   en: 'Avenida de Europa 15, 28224, Pozuelo de Alarcón (Madrid), Spain',
 };
-const registryPending = {
-  es: '[PENDIENTE — REGISTRO MERCANTIL: tomo, folio, hoja]',
-  en: '[PENDING — COMMERCIAL REGISTRY: volume, sheet, page]',
-};
 const updated = { es: 'Última actualización: julio de 2026', en: 'Last updated: July 2026' };
 
 const identES = (withRegistry: boolean, withActivity: boolean) => ({
@@ -42,7 +38,7 @@ const identES = (withRegistry: boolean, withActivity: boolean) => ({
     { term: 'Email', value: EMAIL, href: `mailto:${EMAIL}` },
     { term: 'Teléfono', value: PHONE, href: `tel:${ORG.phoneHref}` },
     ...(withActivity ? [{ term: 'Actividad', value: 'Investigación, desarrollo, fabricación y comercialización de dispositivos tecnológicos de seguridad acuática' }] : []),
-    ...(withRegistry ? [{ term: 'Datos registrales', value: registryPending.es }] : []),
+    ...(withRegistry && ORG.registryDetails ? [{ term: 'Datos registrales', value: ORG.registryDetails }] : []),
   ],
 });
 const identEN = (withRegistry: boolean, withActivity: boolean) => ({
@@ -54,7 +50,7 @@ const identEN = (withRegistry: boolean, withActivity: boolean) => ({
     { term: 'Email', value: EMAIL, href: `mailto:${EMAIL}` },
     { term: 'Phone', value: PHONE, href: `tel:${ORG.phoneHref}` },
     ...(withActivity ? [{ term: 'Activity', value: 'Research, development, manufacturing and commercialization of aquatic safety technological devices' }] : []),
-    ...(withRegistry ? [{ term: 'Registry details', value: registryPending.en }] : []),
+    ...(withRegistry && ORG.registryDetails ? [{ term: 'Registry details', value: ORG.registryDetails }] : []),
   ],
 });
 
