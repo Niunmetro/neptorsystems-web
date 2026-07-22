@@ -68,21 +68,24 @@ void main(){
   caus*=smoothstep(1.10,0.20,p.y);       // dimmer with depth
   col+=vec3(0.0,0.761,0.819)*caus*0.17*uIntensity;   // #00C2D1
 
-  // (c) volumetric sun shafts, right half, extinguished by ~60% height
-  vec3 sun=mix(vec3(1.0,0.965,0.847),vec3(1.0,0.843,0.0),0.35); // #FFF6D8 / #FFD700
-  float beams=0.0;
-  for(int i=0;i<4;i++){
-    float fi=float(i);
-    float cx=0.56+fi*0.13;
-    float ang=(0.16+fi*0.05)+sin(uTime*0.33+fi*1.7)*0.035;      // sway +-2deg
-    float sig=0.030+fi*0.012;                                    // 6-14% width
-    float x=p.x-cx-p.y*tan(ang);
-    float g=exp(-(x*x)/(2.0*sig*sig));
-    float fade=smoothstep(0.62,0.02,p.y);
-    float flick=0.80+0.40*vnoise(vec2(uTime*0.14+fi*5.0,fi));    // low-freq shimmer
-    beams+=g*fade*flick;
-  }
-  col+=sun*beams*0.075*uIntensity;
+  // (c) sunlight piercing the water from the UPPER RIGHT: radial god-rays
+  //     fanning out from a source just outside the top-right corner.
+  vec2 src=vec2(1.06,-0.12);          // the sun, off-canvas upper right
+  vec2 d=p-src;
+  float r=length(d);                  // distance travelled through the water
+  float a=atan(d.y,d.x);              // angle around the source -> the fan
+  float sway=sin(uTime*0.16)*0.020;   // the whole shaft bundle drifts slowly
+  float s1=vnoise(vec2((a+sway)*9.0,uTime*0.050));
+  float s2=vnoise(vec2((a+sway)*19.0+4.0,uTime*0.033));
+  float shaft=smoothstep(0.50,0.92,s1*0.65+s2*0.35);   // thin angular shafts
+  float atten=exp(-r*1.9);                              // light dies as it sinks
+  float depth=smoothstep(0.74,0.04,p.y);                // never reaches the bottom
+  vec3 sunCol=mix(vec3(1.0,0.965,0.847),vec3(1.0,0.843,0.0),0.35); // #FFF6D8 / #FFD700
+  vec3 rayCol=mix(sunCol,vec3(0.45,0.92,0.95),smoothstep(0.15,0.95,r)); // warm -> aqua with depth
+  col+=rayCol*(shaft*atten*depth)*0.22*uIntensity;
+  // the glare of the sun itself hitting the surface at that corner
+  float glare=exp(-r*r*7.0)*smoothstep(0.95,0.0,p.y);
+  col+=sunCol*glare*0.18*uIntensity;
 
   // (d) left vignette guarantees H1/subtitle contrast, then fine dithering
   float vig=smoothstep(0.62,0.0,uv.x)*0.35;
