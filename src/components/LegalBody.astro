@@ -16,6 +16,22 @@ const pendingBody = lang === 'es'
 const pendingNote = lang === 'es'
   ? 'Esta página es una plantilla. El texto legal definitivo lo facilita la dirección de la empresa.'
   : 'This page is a template. The definitive legal text is provided by company management.';
+
+// Legal notice / Aviso legal: precharge the confirmed corporate identification.
+const isLegalNotice = pageId === 'legal';
+const countryName = lang === 'es' ? 'España' : 'Spain';
+const fullAddress = `${ORG.streetAddress}, ${ORG.postalCode} ${ORG.addressLocality}, ${ORG.addressRegion}, ${countryName}`;
+const L = lang === 'es'
+  ? { ident: 'Identificación de la empresa', name: 'Denominación social', nif: 'NIF', office: 'Domicilio social', email: 'Correo electrónico', phone: 'Teléfono', registry: 'Datos registrales', registryPending: '[PENDIENTE — REGISTRO MERCANTIL: tomo, folio, hoja]' }
+  : { ident: 'Company identification', name: 'Company name', nif: 'Tax ID (NIF)', office: 'Registered office', email: 'Email', phone: 'Phone', registry: 'Registry details', registryPending: '[PENDING — COMMERCIAL REGISTRY: volume, sheet, page]' };
+const idRows = [
+  { label: L.name, value: ORG.name },
+  { label: L.nif, value: ORG.vatID },
+  { label: L.office, value: fullAddress },
+  { label: L.email, value: ORG.email, href: `mailto:${ORG.email}` },
+  { label: L.phone, value: ORG.phone, href: `tel:${ORG.phoneHref}` },
+  { label: L.registry, value: L.registryPending, pending: true },
+];
 ---
 <a class="skip-link" href="#main">{lang === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
 
@@ -33,7 +49,24 @@ const pendingNote = lang === 'es'
     <div style="font-family:var(--font-ui);font-size:12px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--aqua-700);">{ORG.name}</div>
     <h1 style="font-family:var(--font-heading);font-weight:700;font-size:clamp(2rem,4vw,2.75rem);line-height:1.1;letter-spacing:-0.02em;color:var(--navy-800);margin:14px 0 0;">{title}</h1>
     <p style="font-family:var(--font-body);font-size:15px;line-height:1.6;color:var(--ink-400);margin:14px 0 0;">{pendingNote}</p>
-    <div style="margin-top:clamp(32px,5vw,48px);padding:clamp(28px,4vw,40px);background:var(--aqua-050);border:1px solid var(--aqua-100);border-radius:18px;">
+
+    {isLegalNotice && (
+      <section aria-label={L.ident} style="margin-top:clamp(32px,5vw,48px);padding:clamp(28px,4vw,40px);background:#fff;border:1px solid var(--line-200);border-radius:18px;box-shadow:var(--shadow-sm);">
+        <h2 style="font-family:var(--font-heading);font-weight:600;font-size:20px;color:var(--navy-800);margin:0 0 18px;">{L.ident}</h2>
+        <dl style="margin:0;display:grid;grid-template-columns:1fr;gap:14px;">
+          {idRows.map((r) => (
+            <div class="legal-id-row">
+              <dt style="font-family:var(--font-ui);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-400);">{r.label}</dt>
+              <dd style={`margin:0;font-family:var(--font-body);font-size:16px;line-height:1.5;${r.pending ? 'color:var(--ink-400);font-style:italic;' : 'color:var(--ink-700);'}`}>
+                {r.href ? <a href={r.href} style="color:var(--aqua-700);">{r.value}</a> : r.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    )}
+
+    <div style="margin-top:clamp(28px,4vw,40px);padding:clamp(28px,4vw,40px);background:var(--aqua-050);border:1px solid var(--aqua-100);border-radius:18px;">
       <p style="font-family:var(--font-body);font-size:17px;line-height:1.7;color:var(--ink-500);margin:0;">{pendingBody}</p>
     </div>
   </div>

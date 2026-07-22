@@ -244,6 +244,10 @@ small { font-size: var(--fs-xs); }
 .checkbox:checked { background: var(--aqua-600); border-color: var(--aqua-600); }
 .checkbox:checked::before { transform: scale(1); }
 
+/* Legal-notice identification rows: two columns on desktop, stacked on mobile */
+.legal-id-row { display: grid; grid-template-columns: 200px 1fr; gap: 6px 20px; align-items: baseline; }
+@media (max-width: 560px) { .legal-id-row { grid-template-columns: 1fr; gap: 2px; } }
+
 /* ============================================================
    RESPONSIVE  (ported verbatim from the design)
    ============================================================ */

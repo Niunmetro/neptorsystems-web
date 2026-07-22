@@ -34,9 +34,13 @@ const orgLd = {
   logo: new URL('/assets/logo-neptor-navy.png', SITE).href,
   email: ORG.email,
   telephone: ORG.phone,
+  vatID: ORG.vatID,
   address: {
     '@type': 'PostalAddress',
+    streetAddress: ORG.streetAddress,
+    postalCode: ORG.postalCode,
     addressLocality: ORG.addressLocality,
+    addressRegion: ORG.addressRegion,
     addressCountry: ORG.addressCountry,
   },
 };

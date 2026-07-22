@@ -5,11 +5,15 @@ export const SITE = 'https://neptorsystems.com';
 
 export const ORG = {
   name: 'NEPTOR SYSTEMS SL',
+  vatID: 'B75815704',
   email: 'connect@neptorsystems.com',
   phone: '+34 652 34 00 14',
   phoneHref: '+34652340014',
-  // Registered office (domicilio social). Street address pending from management.
-  addressLocality: 'Madrid',
+  // Registered office (domicilio social) — confirmed by management.
+  streetAddress: 'Avenida de Europa 15',
+  postalCode: '28224',
+  addressLocality: 'Pozuelo de Alarcón',
+  addressRegion: 'Madrid',
   addressCountry: 'ES',
 };
 

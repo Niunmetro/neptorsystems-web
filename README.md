@@ -87,13 +87,17 @@ Ejecutado sobre `./dist` tras `npm run build`:
 7. **OG ×2 + favicon + sitemap(hreflang) + robots** — ✅ `og/og-es.png`, `og/og-en.png` (1200×630), set de favicon/app-icons, `sitemap.xml` con `xhtml:link` hreflang, `robots.txt`.
 8. **Cero lovable/r2.dev/terceros; cero peticiones externas** — ✅ Grep de `googleapis`/`gstatic`/`lovable`/`r2.dev`/CDNs = 0; todas las fuentes y assets self-hosted.
 
+## Estado de publicación
+
+- **PUBLICADO** en https://neptorsystems.com (+ `/en/`) sobre **GitHub Pages**. Repo: `Niunmetro/neptorsystems-web` (público); deploy automático por GitHub Actions en cada push a `main`. DNS en IONOS: `A` de `@` y `www` → `185.199.108.153`. HTTPS (Let's Encrypt) gratuito; queda que GitHub emita el certificado y activar "enforce HTTPS".
+- **Fotos** (hero piscina + origen taller) — ✅ **HECHO**: integradas y optimizadas (AVIF/WebP/JPG responsive vía `ImageSlot`, `alt` por idioma).
+- **Logos oficiales** — ✅ **HECHO**: lockup blanco/navy = isotipo real de la gota + "NEPTOR SYSTEMS" (navy oficial muestreado); favicon e íconos del asset real.
+- **Identificación corporativa** — ✅ **HECHO**: `ORG` en `config.ts` (NIF `B75815704`, domicilio social completo), JSON-LD Organization con `vatID` + `PostalAddress`, y Aviso Legal / Legal notice con la identificación precargada.
+
 ## Pendientes (owner / dirección)
 
-- **Hosting y redirección `www → apex` (301)** — configurar en el hosting/DNS. El sitio asume `https://neptorsystems.com`.
-- **Endpoint del formulario** — fijar `FORM_ENDPOINT` y poner `WAITLIST_ENABLED=true` cuando el proveedor esté listo.
-- **Contenido legal (6 páginas)** — las plantillas muestran `[PENDIENTE — contenido facilitado por dirección]`. No se redacta contenido legal; la dirección aporta el texto.
-- **`[PENDIENTE-FOTOS]`** — faltan las 2 fotos (hero y origen). Al recibirlas: colocarlas en `public/assets/`, pasar el `src` a `ImageSlot` en `Page.astro` (los `alt` por idioma ya están puestos), servir AVIF/WebP con `srcset`.
+- **Endpoint del formulario** — fijar `FORM_ENDPOINT` y poner `WAITLIST_ENABLED=true` cuando el proveedor esté listo (Formspree free sirve).
+- **Contenido legal** — el Aviso Legal ya precarga denominación, NIF, domicilio, email y teléfono; falta **[PENDIENTE — REGISTRO MERCANTIL: tomo, folio, hoja]** y el resto del texto legal. **Privacidad** y **Cookies** siguen como plantilla `[PENDIENTE]`. No se redacta contenido legal; la dirección aporta el texto.
 - **`[PENDIENTE-VÍDEO]`** — "El origen" (S8) funciona con foto; activar `ORIGIN_VIDEO_ENABLED` cuando exista el vídeo + subtítulos.
-- **Logos `logo-neptor-white.png` / `logo-neptor-navy.png`** — ⚠ los lockups oficiales (1024²) superaban el límite de importación (256 KB) del design y llegaron **truncados**. Los actuales son una **reconstrucción limpia**: el isotipo real de la gota + "Neptor Systems" compuesto en Poppins SemiBold (la fuente de titulares de la marca). Se ven correctos y on-brand, pero **conviene sustituirlos por los PNG oficiales** en las mismas rutas cuando la dirección los facilite (no cambia ningún código). El isotipo (`logo-neptor-mark.png`) y el favicon sí derivan del asset real completo.
 - **Lighthouse móvil ≥95 ×4** — ejecutar en CI/Chrome sobre `/` y `/en/`.
-- **SEO post-publicación** — alta en Google Search Console y solicitud de reindexación tras publicar.
+- **SEO post-publicación** — alta en Google Search Console y solicitud de reindexación.
