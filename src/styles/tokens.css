@@ -1,0 +1,157 @@
+/* Neptor Systems — design tokens (ported verbatim from Claude Design system).
+   Exact brand hex values. Do not approximate. */
+
+:root {
+  /* ---- Brand palette (raw) ---- */
+  --navy: #0A1F44;
+  --gold: #FFD700;
+  --aqua: #00C2D1;
+  --slate: #2C2C2C;
+  --white: #FFFFFF;
+
+  /* ---- Navy scale (structural darks) ---- */
+  --navy-900: #06152F;
+  --navy-800: #0A1F44;  /* Deep Navy — base */
+  --navy-700: #123059;
+  --navy-600: #1D4374;
+  --navy-500: #2E5A94;
+
+  /* ---- Aqua scale (water / tech) ---- */
+  --aqua-700: #008C97;
+  --aqua-600: #00A6B3;
+  --aqua-500: #00C2D1;  /* Aqua Blue — base */
+  --aqua-300: #7FE0E8;
+  --aqua-100: #D6F5F8;  /* light aqua wash — secondary bg */
+  --aqua-050: #EEFBFC;
+
+  /* ---- Neutrals ---- */
+  --ink-900: #1A1A1A;
+  --ink-700: #2C2C2C;   /* Soft Slate — body text */
+  --ink-500: #5B6270;
+  --ink-400: #8A909C;
+  --ink-300: #C4C9D2;
+  --line-200: #E4E7EC;
+  --line-100: #F0F2F5;
+  --paper: #FFFFFF;
+  --paper-soft: #FAFBFC;
+
+  /* ---- Gold (use sparingly) ---- */
+  --gold-500: #FFD700;
+  --gold-600: #E6BF00;  /* accessible gold for small text on white */
+
+  /* ---- Semantic aliases ---- */
+  --surface-page: var(--paper);
+  --surface-page-soft: var(--paper-soft);
+  --surface-secondary: var(--aqua-050);
+  --surface-inverse: var(--navy-800);
+  --surface-card: var(--paper);
+  --surface-sunk: var(--line-100);
+
+  --text-heading: var(--navy-800);
+  --text-body: var(--ink-700);
+  --text-muted: var(--ink-500);
+  --text-faint: var(--ink-400);
+  --text-on-dark: var(--white);
+  --text-on-dark-muted: rgba(255, 255, 255, 0.72);
+  --text-link: var(--aqua-700);
+  --text-accent: var(--gold-600);
+
+  --border-subtle: var(--line-200);
+  --border-strong: var(--ink-300);
+  --border-inverse: rgba(255, 255, 255, 0.16);
+
+  --accent: var(--aqua-500);
+  --accent-strong: var(--aqua-700);
+  --highlight: var(--gold-500);
+
+  /* ---- Status ---- */
+  --status-ok: #1F9E7A;
+  --status-warn: #E6A100;
+  --status-alert: #D64545;
+  --status-info: var(--aqua-600);
+
+  /* ---- Families ---- */
+  --font-heading: 'Poppins', system-ui, sans-serif;
+  --font-ui: 'DM Sans', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  /* ---- Weights ---- */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* ---- Type scale ---- */
+  --fs-display: 4.5rem;
+  --fs-h1: 3.25rem;
+  --fs-h2: 2.375rem;
+  --fs-h3: 1.75rem;
+  --fs-h4: 1.3125rem;
+  --fs-lead: 1.25rem;
+  --fs-body: 1.0625rem;
+  --fs-sm: 0.9375rem;
+  --fs-xs: 0.8125rem;
+  --fs-eyebrow: 0.75rem;
+
+  /* ---- Line heights ---- */
+  --lh-tight: 1.05;
+  --lh-heading: 1.15;
+  --lh-snug: 1.35;
+  --lh-body: 1.65;
+
+  /* ---- Letter spacing ---- */
+  --ls-display: -0.02em;
+  --ls-heading: -0.01em;
+  --ls-body: 0;
+  --ls-eyebrow: 0.16em;
+  --ls-ui: 0.01em;
+
+  /* ---- Space scale (8px base) ---- */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+
+  /* ---- Radii ---- */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* ---- Layout ---- */
+  --container-max: 1200px;
+  --container-narrow: 760px;
+  --gutter: 1.5rem;
+  --section-y: 6rem;
+
+  /* ---- Elevation (soft, navy-tinted) ---- */
+  --shadow-none: none;
+  --shadow-xs: 0 1px 2px rgba(10, 31, 68, 0.06);
+  --shadow-sm: 0 2px 8px rgba(10, 31, 68, 0.06);
+  --shadow-md: 0 8px 24px rgba(10, 31, 68, 0.08);
+  --shadow-lg: 0 18px 48px rgba(10, 31, 68, 0.10);
+  --shadow-focus: 0 0 0 3px rgba(0, 194, 209, 0.35);
+
+  /* ---- Borders ---- */
+  --border-width: 1px;
+  --border-hairline: 1px solid var(--line-200);
+  --border-card: 1px solid var(--line-200);
+
+  /* ---- Motion ---- */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 360ms;
+
+  --focus-ring: 0 0 0 3px rgba(0, 194, 209, 0.35);
+}

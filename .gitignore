@@ -1,0 +1,17 @@
+# build output
+dist/
+# deps
+node_modules/
+# astro
+.astro/
+# logs / os
+*.log
+.DS_Store
+Thumbs.db
+# raw uploads / source photos (baked into public/assets already, not needed to build)
+incoming/
+# design working artifacts (source material kept, generated scratch ignored)
+design/_*.txt
+design/_*.json
+design/gfonts.css
+design/_preview.log

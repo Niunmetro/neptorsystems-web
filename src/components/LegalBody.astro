@@ -1,0 +1,55 @@
+---
+import { dict, type Lang } from '../i18n/copy';
+import { ALT, LEGAL, ORG } from '../config';
+import type { PageId } from '../config';
+
+interface Props { lang: Lang; pageId: Exclude<PageId, 'home'>; title: string }
+const { lang, pageId, title } = Astro.props;
+const t = dict[lang];
+const legal = LEGAL[lang];
+const home = ALT.home[lang];
+const mailto = `mailto:${ORG.email}`;
+const backLabel = lang === 'es' ? 'Volver al inicio' : 'Back to home';
+const pendingBody = lang === 'es'
+  ? '[PENDIENTE — contenido facilitado por dirección]'
+  : '[PENDING — content provided by management]';
+const pendingNote = lang === 'es'
+  ? 'Esta página es una plantilla. El texto legal definitivo lo facilita la dirección de la empresa.'
+  : 'This page is a template. The definitive legal text is provided by company management.';
+---
+<a class="skip-link" href="#main">{lang === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
+
+<header style="background:var(--navy-900);">
+  <div style="max-width:900px;margin:0 auto;padding:18px clamp(20px,5vw,40px);display:flex;align-items:center;justify-content:space-between;gap:20px;">
+    <a href={home} aria-label="Neptor Systems — inicio" style="display:flex;align-items:center;">
+      <img src="/assets/logo-neptor-white.png" alt="Neptor Systems" width="150" height="34" style="height:34px;width:auto;display:block;" />
+    </a>
+    <a href={home} style="font-family:var(--font-ui);font-size:14px;font-weight:600;color:rgba(255,255,255,0.85);">← {backLabel}</a>
+  </div>
+</header>
+
+<main id="main" style="min-height:60vh;">
+  <div style="max-width:760px;margin:0 auto;padding:clamp(56px,9vw,96px) clamp(20px,5vw,40px);">
+    <div style="font-family:var(--font-ui);font-size:12px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--aqua-700);">{ORG.name}</div>
+    <h1 style="font-family:var(--font-heading);font-weight:700;font-size:clamp(2rem,4vw,2.75rem);line-height:1.1;letter-spacing:-0.02em;color:var(--navy-800);margin:14px 0 0;">{title}</h1>
+    <p style="font-family:var(--font-body);font-size:15px;line-height:1.6;color:var(--ink-400);margin:14px 0 0;">{pendingNote}</p>
+    <div style="margin-top:clamp(32px,5vw,48px);padding:clamp(28px,4vw,40px);background:var(--aqua-050);border:1px solid var(--aqua-100);border-radius:18px;">
+      <p style="font-family:var(--font-body);font-size:17px;line-height:1.7;color:var(--ink-500);margin:0;">{pendingBody}</p>
+    </div>
+  </div>
+</main>
+
+<footer style="background:var(--navy-900);color:#fff;">
+  <div style="max-width:900px;margin:0 auto;padding:40px clamp(20px,5vw,40px);">
+    <div style="display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;">
+      <a href={legal.legal} style="font-family:var(--font-ui);font-size:14px;color:rgba(255,255,255,0.7);">{t.ftLegal}</a>
+      <span style="color:rgba(255,255,255,0.25);">·</span>
+      <a href={legal.privacy} style="font-family:var(--font-ui);font-size:14px;color:rgba(255,255,255,0.7);">{t.ftPrivacy}</a>
+      <span style="color:rgba(255,255,255,0.25);">·</span>
+      <a href={legal.cookies} style="font-family:var(--font-ui);font-size:14px;color:rgba(255,255,255,0.7);">{t.ftCookies}</a>
+      <span style="color:rgba(255,255,255,0.25);">·</span>
+      <a href={mailto} style="font-family:var(--font-ui);font-size:14px;color:rgba(255,255,255,0.7);">{ORG.email}</a>
+    </div>
+    <p style="font-family:var(--font-ui);font-size:13px;color:rgba(255,255,255,0.4);margin:20px 0 0;">© 2026 Neptor Systems SL</p>
+  </div>
+</footer>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://neptorsystems.com/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://neptorsystems.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://neptorsystems.com/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://neptorsystems.com/" />
+  </url>
+  <url>
+    <loc>https://neptorsystems.com/en/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://neptorsystems.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://neptorsystems.com/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://neptorsystems.com/" />
+  </url>
+  <url>
+    <loc>https://neptorsystems.com/aviso-legal</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://neptorsystems.com/aviso-legal" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://neptorsystems.com/en/legal-notice" />
+  </url>
+  <url>
+    <loc>https://neptorsystems.com/en/legal-notice</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://neptorsystems.com/aviso-legal" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://neptorsystems.com/en/legal-notice" />
+  </url>
+  <url>
+    <loc>https://neptorsystems.com/privacidad</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://neptorsystems.com/privacidad" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://neptorsystems.com/en/privacy-policy" />
+  </url>
+  <url>
+    <loc>https://neptorsystems.com/en/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://neptorsystems.com/privacidad" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://neptorsystems.com/en/privacy-policy" />
+  </url>
+  <url>
+    <loc>https://neptorsystems.com/cookies</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://neptorsystems.com/cookies" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://neptorsystems.com/en/cookie-policy" />
+  </url>
+  <url>
+    <loc>https://neptorsystems.com/en/cookie-policy</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://neptorsystems.com/cookies" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://neptorsystems.com/en/cookie-policy" />
+  </url>
+</urlset>

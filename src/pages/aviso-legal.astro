@@ -1,0 +1,9 @@
+---
+import Base from '../layouts/Base.astro';
+import LegalBody from '../components/LegalBody.astro';
+import { dict } from '../i18n/copy';
+const title = dict.es.ftLegal;
+---
+<Base lang="es" pageId="legal" title={`${title} — Neptor Systems`}>
+  <LegalBody lang="es" pageId="legal" title={title} />
+</Base>
