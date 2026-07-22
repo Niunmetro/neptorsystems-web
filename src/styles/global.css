@@ -276,6 +276,8 @@ small { font-size: var(--fs-xs); }
 @media (max-width: 960px) {
   [data-hero-grid] { grid-template-columns: 1fr !important; gap: 56px !important; }
   [data-hero-visual] { max-width: 560px; margin: 0 auto; }
+  /* single column: the floating card must not poke out of the viewport */
+  [data-levit] { left: -8px !important; }
   [data-s2] { grid-template-columns: 1fr !important; }
   [data-s2-intro] { position: static !important; }
   [data-stagger] { transform: none !important; margin-top: 0 !important; }
